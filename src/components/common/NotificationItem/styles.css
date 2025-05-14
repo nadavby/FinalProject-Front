@@ -1,9 +1,12 @@
 .notification-item {
-  padding: 12px 15px;
-  border-bottom: 1px solid #e9ecef;
   display: flex;
+  align-items: flex-start;
+  padding: 15px 20px;
+  border-bottom: 1px solid #edf0f2;
   cursor: pointer;
   transition: background-color 0.2s;
+  position: relative;
+  overflow: hidden;
 }
 
 .notification-item:hover {
@@ -11,107 +14,191 @@
 }
 
 .notification-item.unread {
-  background-color: #e6f7ff;
+  background-color: rgba(13, 110, 253, 0.05);
 }
 
 .notification-item.unread:hover {
-  background-color: #d8f0ff;
+  background-color: rgba(13, 110, 253, 0.09);
+}
+
+.notification-item.priority {
+  background-color: rgba(255, 193, 7, 0.1);
+}
+
+.notification-item.priority:hover {
+  background-color: rgba(255, 193, 7, 0.15);
+}
+
+.notification-item.priority:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 4px;
+  background-color: #ffc107;
 }
 
 .notification-icon {
-  margin-right: 12px;
-  font-size: 1rem;
-  color: #0d6efd;
   display: flex;
+  justify-content: center;
   align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #edf0f2;
+  margin-left: 15px;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+
+.notification-item.unread .notification-icon {
+  background-color: #e0efff;
+  color: #0d6efd;
+}
+
+.notification-item.priority .notification-icon {
+  background-color: #fff3cd;
+  color: #ffc107;
 }
 
 .notification-content {
   flex: 1;
-  overflow: hidden;
+  min-width: 0;
+}
+
+.notification-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 5px;
 }
 
 .notification-title {
+  font-size: 0.95rem;
   font-weight: 600;
-  margin-bottom: 4px;
-  white-space: nowrap;
+  color: #333;
+  margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.notification-message {
-  color: #495057;
-  font-size: 0.9rem;
-  margin-bottom: 5px;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.notification-item.unread .notification-title {
+  color: #0d6efd;
 }
 
 .notification-time {
   font-size: 0.75rem;
   color: #6c757d;
+  white-space: nowrap;
+  margin-right: 10px;
+}
+
+.notification-message {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin: 0 0 8px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.match-info {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.match-score {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.score-indicator {
+  height: 6px;
+  background-color: #0d6efd;
+  border-radius: 3px;
+}
+
+.notification-item.priority .score-indicator {
+  background-color: #ffc107;
+}
+
+.match-score span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.view-match-btn {
+  background-color: #e9ecef;
+  border: none;
+  color: #495057;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: center;
+}
+
+.view-match-btn:hover {
+  background-color: #dee2e6;
 }
 
 .notification-actions {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding-left: 10px;
+  gap: 6px;
+  margin-right: 15px;
 }
 
 .action-btn {
   background: none;
   border: none;
-  cursor: pointer;
-  font-size: 0.75rem;
-  padding: 3px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  width: 25px;
-  height: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
   color: #6c757d;
-  margin-bottom: 4px;
+  transition: all 0.2s;
 }
 
 .action-btn:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: #e9ecef;
 }
 
 .read-btn:hover {
-  color: #198754;
+  color: #28a745;
 }
 
-.delete-btn:hover {
+.remove-btn:hover {
   color: #dc3545;
 }
 
-/* Match preview section */
-.match-preview {
-  margin: 5px 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.match-images {
-  display: flex;
-  gap: 5px;
-}
-
-.preview-image {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.match-score {
-  font-size: 0.8rem;
-  color: #198754;
-  font-weight: 600;
-  margin-top: 3px;
+@media (max-width: 576px) {
+  .notification-icon {
+    margin-left: 10px;
+    width: 36px;
+    height: 36px;
+  }
+  
+  .notification-title {
+    font-size: 0.9rem;
+  }
+  
+  .notification-message {
+    font-size: 0.8rem;
+  }
 } 
