@@ -1,6 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faSpinner, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { FC, useEffect, useRef } from 'react';
 import { useNotifications } from '../../../hooks/useNotifications';
 import NotificationItem from '../NotificationItem';
 import './styles.css';
@@ -12,17 +10,6 @@ interface NotificationDropdownProps {
 const NotificationDropdown: FC<NotificationDropdownProps> = ({ onClose }) => {
   const { notifications, markAllAsRead } = useNotifications();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  // Show loading state briefly to improve perceived performance
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 300);
-    
-    return () => clearTimeout(timer);
-  }, []);
 
   // Ensure notifications persist when dropdown reopens
   useEffect(() => {
@@ -30,15 +17,15 @@ const NotificationDropdown: FC<NotificationDropdownProps> = ({ onClose }) => {
     
     // Force a notification check when the dropdown opens
     const checkNotifications = () => {
-      try {
-        // If we don't have both critical match notifications, try to restore from localStorage
-        const has91Match = notifications.some(n => n.type === 'match' && n.data?.score === 91);
-        const has81Match = notifications.some(n => n.type === 'match' && n.data?.score === 81);
+      // If we don't have both critical match notifications, try to restore from localStorage
+      const has91Match = notifications.some(n => n.type === 'match' && n.data?.score === 91);
+      const has81Match = notifications.some(n => n.type === 'match' && n.data?.score === 81);
+      
+      if ((!has91Match || !has81Match) && has91Match !== has81Match) {
+        console.log("[DROPDOWN] Missing critical match notification, trying to restore");
         
-        if ((!has91Match || !has81Match) && has91Match !== has81Match) {
-          console.log("[DROPDOWN] Missing critical match notification, trying to restore");
-          
-          // Try restoring from localStorage backup
+        // Try restoring from localStorage backup
+        try {
           const backupNotifs = localStorage.getItem('notifications_backup');
           if (backupNotifs) {
             const parsedBackup = JSON.parse(backupNotifs);
@@ -53,10 +40,9 @@ const NotificationDropdown: FC<NotificationDropdownProps> = ({ onClose }) => {
               window.location.reload(); // Force reload to restore from localStorage
             }
           }
+        } catch (err) {
+          console.error("[DROPDOWN] Error checking backup notifications:", err);
         }
-      } catch (err) {
-        console.error("[DROPDOWN] Error checking backup notifications:", err);
-        setError(true);
       }
     };
     
@@ -128,32 +114,22 @@ const NotificationDropdown: FC<NotificationDropdownProps> = ({ onClose }) => {
       <div className="notification-overlay" onClick={handleOverlayClick}></div>
       <div className="notification-dropdown" ref={dropdownRef}>
         <div className="notification-header">
-          <h3>התראות {matchCount > 0 && <span className="match-count">({matchCount} התאמות)</span>}</h3>
+          <h3>Notifications {matchCount > 0 && <span className="match-count">({matchCount} matches)</span>}</h3>
           {notifications.some(notification => !notification.read) && (
             <button className="mark-all-read" onClick={handleMarkAllAsRead}>
-              <FontAwesomeIcon icon={faCheck} className="me-1" />
-              סמן הכל כנקרא
+              Mark all as read
             </button>
           )}
         </div>
         
         <div className="notification-list">
-          {loading ? (
-            <div className="notification-status">
-              <FontAwesomeIcon icon={faSpinner} spin />
-              <p>טוען התראות...</p>
-            </div>
-          ) : error ? (
-            <div className="notification-status error">
-              <FontAwesomeIcon icon={faExclamationCircle} />
-              <p>שגיאה בטעינת התראות</p>
-            </div>
-          ) : notifications.length === 0 ? (
-            <div className="notification-status">
-              <p>אין התראות חדשות</p>
+          {notifications.length === 0 ? (
+            <div className="no-notifications">
+              <p>No notifications</p>
             </div>
           ) : (
             <>
+              {/* Show all notifications */}
               {notifications.map(notification => (
                 <NotificationItem 
                   key={notification.id} 
