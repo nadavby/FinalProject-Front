@@ -1,6 +1,8 @@
 .match-detail-modal .modal-content {
   border-radius: 12px;
   overflow: hidden;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .match-detail-modal .modal-header {

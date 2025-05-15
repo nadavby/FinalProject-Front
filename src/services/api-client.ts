@@ -101,3 +101,11 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const getUserNotifications = (userId: string) => {
+  return apiClient.get(`/items/notifications/${userId}`);
+};
+
+export const markNotificationRead = (notificationId: string) => {
+  return apiClient.patch(`/items/notifications/read/${notificationId}`);
+};

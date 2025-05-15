@@ -12,7 +12,7 @@ interface NotificationProviderProps {
 
 const NotificationProvider: FC<NotificationProviderProps> = ({ children }) => {
   const { isAuthenticated, currentUser } = useAuth();
-  const { addNotification, fetchMatchNotifications, removeMatchNotifications } = useNotifications();
+  const { addNotification, fetchMatchNotifications, removeMatchNotifications, fetchUserNotifications } = useNotifications();
   const errorCountRef = useRef(0);
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastFetchTimeRef = useRef<number>(0);
@@ -336,6 +336,12 @@ const NotificationProvider: FC<NotificationProviderProps> = ({ children }) => {
       localStorage.setItem(welcomeShownKey, "true");
     }
   }, [isAuthenticated, currentUser, addNotification]);
+
+  useEffect(() => {
+    if (isAuthenticated && currentUser && currentUser._id) {
+      fetchUserNotifications(currentUser._id);
+    }
+  }, [isAuthenticated, currentUser, fetchUserNotifications]);
 
   return (
     <>
