@@ -79,22 +79,24 @@ const MatchConfirmation: React.FC<MatchConfirmationProps> = (props) => {
 
   const handleConfirmMatch = async () => {
     if (!item || !matchedItem || !currentUser) return;
-    
     setIsSubmitting(true);
-    
     try {
-      await itemService.updateItem(item._id!, {
+      const payload = {
         isResolved: true,
-        resolvedWithItemId: matchedItem._id
-      });
-      
-      await itemService.updateItem(matchedItem._id!, {
+        resolvedWithItemId: matchedItem._id,
+        contactMethod,
+        contactDetails,
+        message
+      };
+      await itemService.resolveItem(item._id!, payload, currentUser._id);
+      await itemService.resolveItem(matchedItem._id!, {
         isResolved: true,
-        resolvedWithItemId: item._id
-      });
-      
+        resolvedWithItemId: item._id,
+        contactMethod,
+        contactDetails,
+        message
+      }, currentUser._id);
       setConfirmationSuccess(true);
-      
     } catch (error) {
       console.error('Error confirming match:', error);
       setError('Failed to confirm match');
@@ -271,9 +273,9 @@ const MatchConfirmation: React.FC<MatchConfirmationProps> = (props) => {
                     <h5 className="card-title">{item.name}</h5>
                     <p className="card-text">{item.description}</p>
                     <ul className="list-group list-group-flush mb-3">
-                      <li className="list-group-item"><strong>Category:</strong> {item.category}</li>
-                      <li className="list-group-item"><strong>Location:</strong> {formatLocation(item.location)}</li>
-                      <li className="list-group-item"><strong>Date:</strong> {new Date(item.date).toLocaleDateString()}</li>
+                      <li className="list-group-item"><strong>Category:</strong> {item.category || 'N/A'}</li>
+                      <li className="list-group-item"><strong>Location:</strong> {item.location || 'N/A'}</li>
+                      <li className="list-group-item"><strong>Date:</strong> {item.date ? new Date(item.date).toLocaleDateString() : 'N/A'}</li>
                     </ul>
                   </div>
                 </div>
@@ -295,9 +297,9 @@ const MatchConfirmation: React.FC<MatchConfirmationProps> = (props) => {
                     <h5 className="card-title">{matchedItem.name}</h5>
                     <p className="card-text">{matchedItem.description}</p>
                     <ul className="list-group list-group-flush mb-3">
-                      <li className="list-group-item"><strong>Category:</strong> {matchedItem.category}</li>
-                      <li className="list-group-item"><strong>Location:</strong> {formatLocation(matchedItem.location)}</li>
-                      <li className="list-group-item"><strong>Date:</strong> {new Date(matchedItem.date).toLocaleDateString()}</li>
+                      <li className="list-group-item"><strong>Category:</strong> {matchedItem.category || 'N/A'}</li>
+                      <li className="list-group-item"><strong>Location:</strong> {matchedItem.location || 'N/A'}</li>
+                      <li className="list-group-item"><strong>Date:</strong> {matchedItem.date ? new Date(matchedItem.date).toLocaleDateString() : 'N/A'}</li>
                     </ul>
                     
                     {matchInfo && (

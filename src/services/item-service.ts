@@ -22,6 +22,9 @@ export interface Item {
   resolvedWithItemId?: string;
   createdAt?: string;
   updatedAt?: string;
+  contactMethod?: string;
+  contactDetails?: string;
+  message?: string;
 }
 
 export interface MatchResult {
@@ -184,11 +187,12 @@ const addItem = async (formData: FormData) => {
   }
 };
 
-const updateItem = async (id: string, item: Partial<Item>, image?: File) => {
+const updateItem = async (id: string, item: Partial<Item>, image?: File, userId?: string) => {
   try {
+    const itemWithUser = { ...item, userId };
     if (!image) {
       console.log("No image provided for update - using direct JSON PUT");
-      return apiClient.put<Item>(`/items/${id}`, item, {
+      return apiClient.put<Item>(`/items/${id}`, itemWithUser, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -202,8 +206,8 @@ const updateItem = async (id: string, item: Partial<Item>, image?: File) => {
     if (item.location) formData.append('location', item.location);
     if (item.date) formData.append('date', item.date);
     if (item.itemType) formData.append('itemType', item.itemType);
-    
-    formData.append('itemData', JSON.stringify(item));
+    if (userId) formData.append('userId', userId);
+    formData.append('itemData', JSON.stringify(itemWithUser));
     formData.append('image', image, image.name);
     return apiClient.put<Item>(`/items/${id}`, formData, {
       headers: {
@@ -237,6 +241,10 @@ const getMatchResults = (itemId: string) => {
   return { request, abort: () => abortController.abort() };
 };
 
+const resolveItem = async (id: string, data: any, userId: string) => {
+  return apiClient.put(`/items/${id}/resolve`, { ...data, userId });
+};
+
 export default {
   getAllLostItems,
   getAllFoundItems,
@@ -246,4 +254,5 @@ export default {
   updateItem,
   deleteItem,
   getMatchResults,
+  resolveItem,
 }; 

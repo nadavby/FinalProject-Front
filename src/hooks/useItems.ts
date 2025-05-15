@@ -80,16 +80,18 @@ export const useUserItems = (userId: string) => {
   useEffect(() => {
     if (!userId) return;
     
-    console.log("Fetching user items...");
+    console.log("Fetching user items... userId:", userId);
     setIsLoading(true);
     const { request, abort } = itemService.getItemsByUser(userId);
     request.then((res) => {
       setIsLoading(false);
       setItems(res.data);
+      console.log('useUserItems - items from server:', res.data);
     }).catch((error) => {
       if (!(error instanceof CanceledError)) {
         setError(error.message);
         setIsLoading(false);
+        console.error('useUserItems - error:', error);
       }
     });
    

@@ -216,8 +216,54 @@ const UserProfile: FC = () => {
 
   const { ref: profileImageRef, ...profileImageRest } = register("profileImage");
 
-  const lostItems = items.filter(item => item.itemType === 'lost');
-  const foundItems = items.filter(item => item.itemType === 'found');
+  const renderUserItems = (typeParam: 'lost' | 'found') => {
+    if (itemsLoading) return <div>Loading posts...</div>;
+    if (itemsError) return <div>Error loading posts: {itemsError}</div>;
+    // סינון לפי owner ו-type, עם טיפול בפוסטים ישנים
+    const filtered = items.filter(item => {
+      // אם אין owner בכלל – נניח שזה פוסט ישן של המשתמש הנוכחי
+      if (!item.owner) {
+        // פוסטים ישנים יוצגו רק ב-lost
+        return typeParam === 'lost';
+      }
+      // השוואה גמישה: owner כמחרוזת או כאובייקט
+      let ownerId = item.owner;
+      if (typeof ownerId === 'object' && ownerId !== null && '_id' in ownerId) ownerId = ownerId._id;
+      if (ownerId == null) ownerId = '';
+      if (typeof ownerId !== 'string') ownerId = String(ownerId);
+      if (ownerId !== currentUser?._id) return false;
+      // אם יש itemType – סנן לפי סוג
+      if (item.itemType) {
+        return item.itemType.toLowerCase().trim() === typeParam;
+      }
+      // אם אין itemType – פוסטים ישנים יוצגו רק ב-lost
+      return typeParam === 'lost';
+    });
+    console.log('currentUser._id:', currentUser?._id);
+    console.log('All items:', items);
+    console.log('Filtered items for', typeParam, ':', filtered);
+    if (!filtered || filtered.length === 0) return <div>No posts of this type found.</div>;
+    return (
+      <div className="row">
+        {filtered.map(item => (
+          <div className="col-md-6 col-lg-4 mb-4" key={item._id}>
+            <div className="card h-100">
+              {item.imgURL && (
+                <img src={item.imgURL} alt={item.name} className="card-img-top" style={{maxHeight: 200, objectFit: 'cover'}} />
+              )}
+              <div className="card-body">
+                <h5 className="card-title">{item.name}</h5>
+                <p className="card-text">{item.description}</p>
+                <p className="card-text"><strong>Category:</strong> {item.category}</p>
+                <p className="card-text"><strong>Location:</strong> {item.location}</p>
+                <p className="card-text"><strong>Date:</strong> {formatDate(item.date)}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="container mt-4">
@@ -359,122 +405,12 @@ const UserProfile: FC = () => {
       
       <div className="mt-4">
         <h3>My Lost Items</h3>
-        {itemsLoading ? (
-          <p>Loading items...</p>
-        ) : itemsError ? (
-          <p className="alert alert-danger">Error loading items: {itemsError}</p>
-        ) : lostItems.length === 0 ? (
-          <p className="alert alert-info">No lost items reported</p>
-        ) : (
-          <div className="row">
-            {lostItems.map((item: Item) => (
-              <div key={item._id} className="col-md-6 col-lg-4 mb-4">
-                <div className="card shadow-sm h-100">
-                  {item.imgURL && (
-                    <img 
-                      src={item.imgURL} 
-                      className="card-img-top" 
-                      alt={item.name}
-                      style={{ height: "200px", objectFit: "cover" }}
-                    />
-                  )}
-                  <div className="card-body d-flex flex-column">
-                    <h5 className="card-title">{item.name}</h5>
-                    <p className="card-text">{item.description}</p>
-                    <div className="mt-auto">
-                      <p className="card-text mb-1">
-                        <FontAwesomeIcon icon={faTag} className="me-2 text-secondary" />
-                        {item.category}
-                      </p>
-                      <p className="card-text mb-1">
-                        <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2 text-danger" />
-                        {formatLocation(item.location)}
-                      </p>
-                      <p className="card-text">
-                        <FontAwesomeIcon icon={faCalendarAlt} className="me-2 text-info" />
-                        {formatDate(item.date)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="card-footer bg-transparent d-flex justify-content-between">
-                    <button 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => navigate(`/item/${item._id}`)}
-                    >
-                      View Details
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteItem(item._id!)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {renderUserItems('lost')}
       </div>
       
       <div className="mt-4">
         <h3>My Found Items</h3>
-        {itemsLoading ? (
-          <p>Loading items...</p>
-        ) : itemsError ? (
-          <p className="alert alert-danger">Error loading items: {itemsError}</p>
-        ) : foundItems.length === 0 ? (
-          <p className="alert alert-info">No found items reported</p>
-        ) : (
-          <div className="row">
-            {foundItems.map((item: Item) => (
-              <div key={item._id} className="col-md-6 col-lg-4 mb-4">
-                <div className="card shadow-sm h-100">
-                  {item.imgURL && (
-                    <img 
-                      src={item.imgURL} 
-                      className="card-img-top" 
-                      alt={item.name}
-                      style={{ height: "200px", objectFit: "cover" }}
-                    />
-                  )}
-                  <div className="card-body d-flex flex-column">
-                    <h5 className="card-title">{item.name}</h5>
-                    <p className="card-text">{item.description}</p>
-                    <div className="mt-auto">
-                      <p className="card-text mb-1">
-                        <FontAwesomeIcon icon={faTag} className="me-2 text-secondary" />
-                        {item.category}
-                      </p>
-                      <p className="card-text mb-1">
-                        <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2 text-danger" />
-                        {formatLocation(item.location)}
-                      </p>
-                      <p className="card-text">
-                        <FontAwesomeIcon icon={faCalendarAlt} className="me-2 text-info" />
-                        {formatDate(item.date)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="card-footer bg-transparent d-flex justify-content-between">
-                    <button 
-                      className="btn btn-sm btn-primary"
-                      onClick={() => navigate(`/item/${item._id}`)}
-                    >
-                      View Details
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteItem(item._id!)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {renderUserItems('found')}
       </div>
       
       <div className="my-4 text-center">

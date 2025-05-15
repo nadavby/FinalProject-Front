@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Item } from '../services/item-service';
 import imageComparisonService from '../services/imageComparisonService';
+import { getUserNotifications, markNotificationRead } from '../services/api-client';
 
 export interface Notification {
   id: string;
@@ -32,6 +33,7 @@ interface NotificationsContextType {
   removeNotification: (id: string) => void;
   removeMatchNotifications: () => void;
   fetchMatchNotifications: (userItems: Item[]) => Promise<void>;
+  fetchUserNotifications: (userId: string) => Promise<void>;
 }
 
 const NotificationsContext = createContext<NotificationsContextType | undefined>(undefined);
@@ -336,6 +338,26 @@ export const NotificationsProvider: React.FC<{ children: ReactNode }> = ({ child
     }
   };
 
+  const fetchUserNotifications = async (userId: string) => {
+    try {
+      const response = await getUserNotifications(userId);
+      if (Array.isArray(response.data)) {
+        const notificationsFromServer = response.data.map((notif: any) => ({
+          id: notif._id,
+          type: notif.type === 'MATCH_FOUND' ? 'match' : 'system',
+          read: notif.isRead,
+          createdAt: new Date(notif.createdAt),
+          title: notif.title,
+          message: notif.message,
+          data: notif.data,
+        })) as Notification[];
+        setNotifications(notificationsFromServer);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications from server:', error);
+    }
+  };
+
   return (
     <NotificationsContext.Provider
       value={{
@@ -346,7 +368,8 @@ export const NotificationsProvider: React.FC<{ children: ReactNode }> = ({ child
         markAllAsRead,
         removeNotification,
         removeMatchNotifications,
-        fetchMatchNotifications
+        fetchMatchNotifications,
+        fetchUserNotifications
       }}
     >
       {children}

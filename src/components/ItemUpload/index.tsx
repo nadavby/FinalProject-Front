@@ -145,6 +145,10 @@ const ItemUpload: FC = () => {
     }
   }, [formData.location, mapInitialized]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleGetCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -327,7 +331,7 @@ const ItemUpload: FC = () => {
           matchResults: formattedMatches
         });
       } else {
-        navigate(formData.kind === 'lost' ? '/lost-items' : '/found-items');
+        navigate(formData.kind === 'lost' ? '/lost-items' : '/profile');
       }
     } catch (err: any) {
       console.error("Error uploading item:", err);
@@ -347,7 +351,7 @@ const ItemUpload: FC = () => {
 
   const handleCloseMatchesModal = () => {
     setShowMatchesModal(false);
-    navigate(formData.kind === 'lost' ? '/lost-items' : '/found-items');
+    navigate(formData.kind === 'lost' ? '/lost-items' : '/profile');
   };
 
   if (loadError) {

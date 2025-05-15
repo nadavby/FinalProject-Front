@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faUser, faCheckCircle, faPercentage } from '@fortawesome/free-solid-svg-icons';
 import './styles.css';
 import itemService, { Item } from '../../services/item-service';
+import { useAuth } from '../../hooks/useAuth';
 
 interface MatchDetailModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ const MatchDetailModal: FC<MatchDetailModalProps> = ({
   ownerEmail,
   onViewDetails
 }) => {
+  const { currentUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [item, setItem] = useState<Item | null>(null);
   const [matchedItem, setMatchedItem] = useState<Item | null>(null);
@@ -84,6 +86,31 @@ const MatchDetailModal: FC<MatchDetailModalProps> = ({
     }
   }, [isOpen, itemId, matchId, itemName, matchName, itemImage, matchImage, ownerName, ownerEmail]);
 
+  const getOtherSideInfo = () => {
+    if (!currentUser) return { name: '', email: '' };
+    if (item && matchedItem) {
+      if (item.owner === currentUser._id || item.ownerName === currentUser.userName || item.ownerEmail === currentUser.email) {
+        return { name: matchedItem.ownerName, email: matchedItem.ownerEmail };
+      } else {
+        return { name: item.ownerName, email: item.ownerEmail };
+      }
+    }
+    return { name: ownerName, email: ownerEmail };
+  };
+
+  const otherSide = getOtherSideInfo();
+
+  // פונקציה להצגת טקסט "Found by ..." או "Lost by ..."
+  const getItemTypeText = (itemObj: Item | null, fallback: string) => {
+    if (!itemObj) return fallback;
+    if (itemObj.itemType === 'found') {
+      return `Found by ${itemObj.ownerName || ''}${itemObj.ownerEmail ? ` (${itemObj.ownerEmail})` : ''}`;
+    } else if (itemObj.itemType === 'lost') {
+      return `Lost by ${itemObj.ownerName || ''}${itemObj.ownerEmail ? ` (${itemObj.ownerEmail})` : ''}`;
+    }
+    return fallback;
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -124,7 +151,7 @@ const MatchDetailModal: FC<MatchDetailModalProps> = ({
                 </div>
                 <div className="match-detail-item-info">
                   <h5>{itemName || (item?.name || 'Your Item')}</h5>
-                  <p className="item-type">Your {item?.itemType || 'Item'}</p>
+                  <p className="item-type">{getItemTypeText(item, 'Your Item')}</p>
                 </div>
               </div>
               
@@ -150,24 +177,24 @@ const MatchDetailModal: FC<MatchDetailModalProps> = ({
                 </div>
                 <div className="match-detail-item-info">
                   <h5>{matchName || (matchedItem?.name || 'Matched Item')}</h5>
-                  <p className="item-type">{matchedItem?.itemType || 'Found'} by another user</p>
+                  <p className="item-type">{getItemTypeText(matchedItem, 'Matched Item')}</p>
                 </div>
               </div>
             </div>
             
-            {(ownerName || ownerEmail || (matchedItem?.ownerName) || (matchedItem?.ownerEmail)) && (
+            {(otherSide.name || otherSide.email) && (
               <div className="match-owner-info">
-                <h6>Owner Information</h6>
-                {(ownerName || matchedItem?.ownerName) && (
+                <h6>Other User Information</h6>
+                {otherSide.name && (
                   <div className="owner-detail">
                     <FontAwesomeIcon icon={faUser} className="me-2" />
-                    {ownerName || matchedItem?.ownerName}
+                    {otherSide.name}
                   </div>
                 )}
-                {(ownerEmail || matchedItem?.ownerEmail) && (
+                {otherSide.email && (
                   <div className="owner-detail">
                     <FontAwesomeIcon icon={faEnvelope} className="me-2" />
-                    {ownerEmail || matchedItem?.ownerEmail}
+                    {otherSide.email}
                   </div>
                 )}
               </div>

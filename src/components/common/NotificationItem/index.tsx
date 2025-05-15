@@ -4,6 +4,7 @@ import { Notification, useNotifications } from '../../../hooks/useNotifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faEnvelope, faEnvelopeOpen, faCheck } from '@fortawesome/free-solid-svg-icons';
 import MatchDetailModal from '../../MatchDetailModal';
+import { markNotificationRead as markNotificationReadApi } from '../../../services/api-client';
 import './styles.css';
 
 interface NotificationItemProps {
@@ -32,9 +33,14 @@ const NotificationItem: FC<NotificationItemProps> = ({ notification, onClose }) 
     return date.toLocaleDateString();
   };
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!notification.read) {
       markAsRead(notification.id);
+      try {
+        await markNotificationReadApi(notification.id);
+      } catch (err) {
+        console.error('Failed to mark notification as read in server:', err);
+      }
     }
     
     if (notification.type === 'match' && notification.data) {
