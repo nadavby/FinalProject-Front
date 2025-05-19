@@ -25,6 +25,7 @@ export interface Item {
   contactMethod?: string;
   contactDetails?: string;
   message?: string;
+  userId?: string;
 }
 
 export interface MatchResult {
