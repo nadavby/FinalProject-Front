@@ -265,74 +265,18 @@ const ItemUpload: FC = () => {
         submitData.append('image', uploadedImage);
       }
       
-      const response = await itemService.addItem(submitData);
-      
-      console.log("Item upload response:", {
-        fullResponse: response,
-        data: response.data,
-        nestedData: response.data?.data,
-        nestedId: response.data?.data?._id
-      });
-      
-      let uploadedId = null;
-      let matchResultsData = null;
-      
-      if (response.data?.data?._id) {
-        uploadedId = response.data.data._id;
-        matchResultsData = response.data.matchResults;
-      } else if (response.data?._id) {
-        uploadedId = response.data._id;
-        matchResultsData = response.data.matchResults;
-      } else if (response.data?.data?.id) {
-        uploadedId = response.data.data.id;
-        matchResultsData = response.data.matchResults;
-      } else if (typeof response.data === 'object' && response.data !== null) {
-        const data = response.data;
-        if (data._id) {
-          uploadedId = data._id;
-          matchResultsData = data.matchResults;
-        } else if (data.id) {
-          uploadedId = data.id;
-          matchResultsData = data.matchResults;
-        } else if (data.data && (data.data._id || data.data.id)) {
-          uploadedId = data.data._id || data.data.id;
-          matchResultsData = data.matchResults || data.data.matchResults;
-        }
-      }
-      
-      if (uploadedId) {
-        setUploadedItemId(uploadedId);
-        setUploadedItemName(itemName);
-        
-        console.log("Successfully extracted item ID:", uploadedId);
-      } else {
-        console.error("Could not find item ID in response:", response);
-      }
-      
-      if (matchResultsData && matchResultsData.length > 0) {
-        const formattedMatches = matchResultsData.map((match: any) => ({
-          matchedItemId: match.item._id || match.item.id || match._id || match.id,
-          similarity: match.score / 100, 
-          itemName: match.item.name || match.itemName || match.name,
-          itemDescription: match.item.description || match.itemDescription || match.description,
-          itemImgURL: match.item.imgURL || match.item.imageUrl || match.imgURL || match.imageUrl,
-          ownerName: match.item.ownerName || match.ownerName,
-          ownerEmail: match.item.ownerEmail || match.ownerEmail
-        }));
-        
-        setMatchResults(formattedMatches);
-        setShowMatchesModal(true);
-        
-        // Log modal props before showing
-        console.log("Showing modal with props:", {
-          showMatchesModal: true,
-          uploadedItemId: uploadedId,
-          uploadedItemName,
-          matchResults: formattedMatches
+      // Fire and forget - don't await the response
+      itemService.addItem(submitData)
+        .then(response => {
+          console.log("Item upload completed in background:", response);
+        })
+        .catch(err => {
+          console.error("Background item upload error:", err);
         });
-      } else {
-        navigate(formData.kind === 'lost' ? '/lost-items' : '/profile');
-      }
+
+      // Navigate immediately after initiating the upload
+      navigate(formData.kind === 'lost' ? '/lost-items' : '/profile');
+      
     } catch (err: any) {
       console.error("Error uploading item:", err);
       
