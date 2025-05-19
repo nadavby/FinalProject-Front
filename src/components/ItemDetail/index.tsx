@@ -19,7 +19,7 @@ import imageComparisonService from '../../services/imageComparisonService';
 import './ItemDetail.css';
 
 const ItemDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { itemId } = useParams<{ itemId: string }>();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   
@@ -32,16 +32,16 @@ const ItemDetail: React.FC = () => {
   const [selectedMatch, setSelectedMatch] = useState<any | null>(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!itemId) return;
 
     const fetchItem = async () => {
       try {
         setLoading(true);
-        const { request } = itemService.getItemById(id);
+        const { request } = itemService.getItemById(itemId);
         const response = await request;
         setItem(response.data);
         
-        fetchMatches(id);
+        fetchMatches(itemId);
       } catch (error) {
         console.error('Error fetching item:', error);
         setError('Failed to load item details');
@@ -51,7 +51,7 @@ const ItemDetail: React.FC = () => {
     };
 
     fetchItem();
-  }, [id]);
+  }, [itemId]);
 
   const fetchMatches = async (itemId: string) => {
     try {
@@ -71,10 +71,10 @@ const ItemDetail: React.FC = () => {
   };
 
   const handleResolveItem = async (matchId?: string) => {
-    if (!id || !item) return;
+    if (!itemId || !item) return;
     
     try {
-      await itemService.updateItem(id, { 
+      await itemService.updateItem(itemId, { 
         ...item,
         isResolved: true,
         resolvedWithItemId: matchId 

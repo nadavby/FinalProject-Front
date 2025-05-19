@@ -7,6 +7,7 @@ export { CanceledError };
 
 export interface Item {
   _id?: string;
+  id?: string;
   name: string;
   description: string;
   category: string;
