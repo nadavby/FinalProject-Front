@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 
-import { FC, useState, useEffect } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useUserItems } from "../../hooks/useItems";
 import { Item } from "../../services/item-service";
@@ -211,16 +211,14 @@ const UserProfile: FC = () => {
     return String(location);
   };
 
-  if (!loading && !isAuthenticated) return <Navigate to="/login" />;
-  if (!localUser) return <div>Loading...</div>;
+  if (!loading && !isAuthenticated) return <Navigate to="/login" key="navigate-to-login" />;
+  if (!localUser) return <div key="loading-indicator">Loading...</div>;
 
   const { ref: profileImageRef, ...profileImageRest } = register("profileImage");
 
   const renderUserItems = (typeParam: 'lost' | 'found') => {
-    if (itemsLoading) return <div>Loading posts...</div>;
-    if (itemsError) return <div>Error loading posts: {itemsError}</div>;
-
-    console.log('All items before filtering:', items);
+    if (itemsLoading) return <div key={`${typeParam}-loading`}>Loading posts...</div>;
+    if (itemsError) return <div key={`${typeParam}-error`}>Error loading posts: {itemsError}</div>;
 
     const filtered = items.filter(item => {
       // בדיקה שהפריט שייך למשתמש הנוכחי
@@ -232,14 +230,11 @@ const UserProfile: FC = () => {
 
       // בדיקת סוג הפריט (lost/found)
       const itemType = (item.itemType || '').toLowerCase().trim();
-      console.log('Item:', item.name, 'Type:', itemType, 'Expected:', typeParam);
       return itemType === typeParam;
     });
 
-    console.log('Filtered items for', typeParam, ':', filtered);
-
     if (!filtered || filtered.length === 0) {
-      return <div>No {typeParam} items found.</div>;
+      return <div key={`${typeParam}-empty`}>No {typeParam} items found.</div>;
     }
 
     return (
@@ -248,14 +243,20 @@ const UserProfile: FC = () => {
           <div className="col-md-6 col-lg-4 mb-4" key={item._id}>
             <div className="card h-100">
               {item.imgURL && (
-                <img src={item.imgURL} alt={item.name} className="card-img-top" style={{maxHeight: 200, objectFit: 'cover'}} />
+                <img 
+                  src={item.imgURL} 
+                  alt={item.name} 
+                  className="card-img-top" 
+                  style={{maxHeight: 200, objectFit: 'cover'}}
+                  key={`img-${item._id}`}
+                />
               )}
               <div className="card-body">
-                <h5 className="card-title">{item.name}</h5>
-                <p className="card-text">{item.description}</p>
-                <p className="card-text"><strong>Category:</strong> {item.category}</p>
-                <p className="card-text"><strong>Location:</strong> {item.location}</p>
-                <p className="card-text"><strong>Date:</strong> {formatDate(item.date)}</p>
+                <h5 className="card-title" key={`title-${item._id}`}>{item.name}</h5>
+                <p className="card-text" key={`desc-${item._id}`}>{item.description}</p>
+                <p className="card-text" key={`cat-${item._id}`}><strong>Category:</strong> {item.category}</p>
+                <p className="card-text" key={`loc-${item._id}`}><strong>Location:</strong> {item.location}</p>
+                <p className="card-text" key={`date-${item._id}`}><strong>Date:</strong> {formatDate(item.date)}</p>
               </div>
             </div>
           </div>
@@ -285,7 +286,7 @@ const UserProfile: FC = () => {
               />
               
               {isEditing && (
-                <div className="position-absolute bottom-0 end-0" style={{ marginRight: "30%" }}>
+                <div className="position-absolute bottom-0 end-0" style={{ marginRight: "30%" }} key="edit-image-controls">
                   <button
                     type="button"
                     className="btn btn-sm btn-outline-secondary rounded-circle"
@@ -307,12 +308,12 @@ const UserProfile: FC = () => {
                 </div>
               )}
               
-              {isUploading && <p className="text-primary mt-2">Uploading...</p>}
+              {isUploading && <p className="text-primary mt-2" key="uploading-message">Uploading...</p>}
             </div>
             
             <div className="col-md-9">
               {!isEditing ? (
-                <>
+                <div key="view-mode">
                   <p>
                     <strong>Username:</strong> {localUser.userName || "Not set"}
                   </p>
@@ -340,9 +341,9 @@ const UserProfile: FC = () => {
                     className="btn btn-secondary ms-2">
                     Logout
                   </button>
-                </>
+                </div>
               ) : (
-                <>
+                <div key="edit-mode">
                   <div className="mb-3">
                     <label htmlFor="userName" className="form-label">Username:</label>
                     <input
@@ -352,7 +353,7 @@ const UserProfile: FC = () => {
                       className={`form-control ${errors.userName ? "is-invalid" : ""}`}
                     />
                     {errors.userName && (
-                      <div className="invalid-feedback">{errors.userName.message}</div>
+                      <div className="invalid-feedback" key="username-error">{errors.userName.message}</div>
                     )}
                   </div>
                   
@@ -365,7 +366,7 @@ const UserProfile: FC = () => {
                       className={`form-control ${errors.email ? "is-invalid" : ""}`}
                     />
                     {errors.email && (
-                      <div className="invalid-feedback">{errors.email.message}</div>
+                      <div className="invalid-feedback" key="email-error">{errors.email.message}</div>
                     )}
                   </div>
                   
@@ -379,7 +380,7 @@ const UserProfile: FC = () => {
                       placeholder="Enter new password"
                     />
                     {errors.password && (
-                      <div className="invalid-feedback">{errors.password.message}</div>
+                      <div className="invalid-feedback" key="password-error">{errors.password.message}</div>
                     )}
                   </div>
                   
@@ -395,22 +396,26 @@ const UserProfile: FC = () => {
                     className="btn btn-secondary">
                     Cancel
                   </button>
-                </>
+                </div>
               )}
             </div>
           </div>
         </form>
       </div>
       
-      <div className="mt-4">
-        <h3>My Lost Items</h3>
-        {renderUserItems('lost')}
-      </div>
+      <React.Fragment key="lost-items-section">
+        <div className="mt-4">
+          <h3>My Lost Items</h3>
+          {renderUserItems('lost')}
+        </div>
+      </React.Fragment>
       
-      <div className="mt-4">
-        <h3>My Found Items</h3>
-        {renderUserItems('found')}
-      </div>
+      <React.Fragment key="found-items-section">
+        <div className="mt-4">
+          <h3>My Found Items</h3>
+          {renderUserItems('found')}
+        </div>
+      </React.Fragment>
       
       <div className="my-4 text-center">
         <button 
