@@ -219,30 +219,29 @@ const UserProfile: FC = () => {
   const renderUserItems = (typeParam: 'lost' | 'found') => {
     if (itemsLoading) return <div>Loading posts...</div>;
     if (itemsError) return <div>Error loading posts: {itemsError}</div>;
-    // סינון לפי owner ו-type, עם טיפול בפוסטים ישנים
+
+    console.log('All items before filtering:', items);
+
     const filtered = items.filter(item => {
-      // אם אין owner בכלל – נניח שזה פוסט ישן של המשתמש הנוכחי
-      if (!item.owner) {
-        // פוסטים ישנים יוצגו רק ב-lost
-        return typeParam === 'lost';
-      }
-      // השוואה גמישה: owner כמחרוזת או כאובייקט
-      let ownerId = item.owner;
-      if (typeof ownerId === 'object' && ownerId !== null && '_id' in ownerId) ownerId = ownerId._id;
-      if (ownerId == null) ownerId = '';
-      if (typeof ownerId !== 'string') ownerId = String(ownerId);
-      if (ownerId !== currentUser?._id) return false;
-      // אם יש itemType – סנן לפי סוג
-      if (item.itemType) {
-        return item.itemType.toLowerCase().trim() === typeParam;
-      }
-      // אם אין itemType – פוסטים ישנים יוצגו רק ב-lost
-      return typeParam === 'lost';
+      // בדיקה שהפריט שייך למשתמש הנוכחי
+      const itemOwner = item.owner || item.userId;
+      if (!itemOwner || !currentUser?._id) return false;
+
+      const isCurrentUserItem = String(itemOwner) === String(currentUser._id);
+      if (!isCurrentUserItem) return false;
+
+      // בדיקת סוג הפריט (lost/found)
+      const itemType = (item.itemType || '').toLowerCase().trim();
+      console.log('Item:', item.name, 'Type:', itemType, 'Expected:', typeParam);
+      return itemType === typeParam;
     });
-    console.log('currentUser._id:', currentUser?._id);
-    console.log('All items:', items);
+
     console.log('Filtered items for', typeParam, ':', filtered);
-    if (!filtered || filtered.length === 0) return <div>No posts of this type found.</div>;
+
+    if (!filtered || filtered.length === 0) {
+      return <div>No {typeParam} items found.</div>;
+    }
+
     return (
       <div className="row">
         {filtered.map(item => (
