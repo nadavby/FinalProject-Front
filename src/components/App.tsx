@@ -14,6 +14,7 @@ import ItemUpload from "./ItemUpload";
 import ItemDetail from "./ItemDetail";
 import MatchConfirmation from "./MatchConfirmation";
 import UserProfile from "./UserProfile";
+import "../styles/global.css";
 
 const App: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -23,24 +24,32 @@ const App: React.FC = () => {
   }
 
   return (
-    <NotificationsProvider>
-      <NotificationProvider>
-        <Navigation />
-        <Routes>
-          <Route path="/" element={isAuthenticated ? <LostItems /> : <Login />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<RegistrationForm />} />
-          <Route path="/lost-items" element={<LostItems />} />
-          <Route path="/upload-item" element={<ItemUpload />} />
-          <Route path="/item/:itemId" element={<ItemDetail />} />
-          <Route
-            path="/item/:itemId/match/:matchId"
-            element={<MatchConfirmation />}
-          />
-          <Route path="/profile" element={<UserProfile />} />
-        </Routes>
-      </NotificationProvider>
-    </NotificationsProvider>
+    <div style={{ 
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
+      <NotificationsProvider>
+        <NotificationProvider>
+          <Navigation />
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            <Routes>
+              <Route path="/" element={isAuthenticated ? <LostItems /> : <Login />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<RegistrationForm />} />
+              <Route path="/lost-items" element={<LostItems />} />
+              <Route path="/upload-item" element={<ItemUpload />} />
+              <Route path="/item/:itemId" element={<ItemDetail />} />
+              <Route
+                path="/item/:itemId/match/:matchId"
+                element={<MatchConfirmation />}
+              />
+              <Route path="/profile" element={<UserProfile />} />
+            </Routes>
+          </div>
+        </NotificationProvider>
+      </NotificationsProvider>
+    </div>
   );
 };
 
