@@ -311,7 +311,11 @@ const ItemUpload: FC = () => {
   }
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4" style={{ 
+      height: 'calc(100vh - 2rem)',
+      overflowY: 'auto',
+      paddingBottom: '4rem'
+    }}>
       <div className="d-flex align-items-center mb-4">
         <button
           className="btn btn-outline-secondary me-3"
