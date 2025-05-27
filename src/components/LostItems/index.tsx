@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** @format */
 
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { useLostItems } from "../../hooks/useItems";
 import { useAuth } from "../../hooks/useAuth";
 import { Item } from "../../services/item-service";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -18,12 +18,20 @@ import itemService from "../../services/item-service";
 type SortOption = 'newest' | 'oldest' | 'category';
 
 const LostItems: FC = () => {
-  const { items, isLoading, error, setItems } = useLostItems();
+  const { items, isLoading, error, fetchItems } = useLostItems();
   const { isAuthenticated, loading: authLoading, currentUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    if (location.state?.refresh) {
+      fetchItems();
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, fetchItems]);
 
   if (!authLoading && !isAuthenticated) {
     navigate("/login");
@@ -34,11 +42,10 @@ const LostItems: FC = () => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const { request } = itemService.deleteItem(itemId);
+      if (!currentUser?._id) throw new Error('No user ID');
+      const { request } = itemService.deleteItem(itemId, currentUser._id);
       await request;
-      setItems((prevItems: Item[]) =>
-        prevItems.filter((item) => item._id !== itemId)
-      );
+      fetchItems();
     } catch (error) {
       console.error("Error deleting item:", error);
     }

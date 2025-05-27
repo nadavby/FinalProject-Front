@@ -275,7 +275,11 @@ const ItemUpload: FC = () => {
         });
 
       // Navigate immediately after initiating the upload
-      navigate(formData.kind === 'lost' ? '/lost-items' : '/profile');
+      if (formData.kind === 'lost') {
+        navigate('/lost-items', { state: { refresh: true } });
+      } else {
+        navigate('/profile');
+      }
       
     } catch (err: any) {
       console.error("Error uploading item:", err);

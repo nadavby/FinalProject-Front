@@ -8,10 +8,9 @@ export const useLostItems = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
- 
-  useEffect(() => {
-    console.log("Fetching lost items...");
-    
+
+  const fetchItems = () => {
+    setIsLoading(true);
     const { request, abort } = itemService.getAllLostItems();
     request
       .then((res) => {
@@ -25,11 +24,15 @@ export const useLostItems = () => {
       .finally(() => {
         setIsLoading(false);
       });
+    return abort;
+  };
 
+  useEffect(() => {
+    const abort = fetchItems();
     return () => abort();
   }, []);
 
-  return { items, error, isLoading, setItems, setError, setIsLoading };
+  return { items, error, isLoading, setItems, setError, setIsLoading, fetchItems };
 };
 
 export const useFoundItems = () => {
