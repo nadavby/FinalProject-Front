@@ -178,7 +178,7 @@ const UserProfile: FC = () => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      const { request } = itemService.deleteItem(itemId);
+      const { request } = itemService.deleteItem(itemId, currentUser?._id || "");
       await request;
       window.location.reload();
     } catch (error) {
@@ -266,7 +266,11 @@ const UserProfile: FC = () => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4" style={{ 
+      height: 'calc(100vh - 2rem)',
+      overflowY: 'auto',
+      paddingBottom: '4rem'
+    }}>
       <button
         className="btn btn-outline-primary mb-3"
         onClick={() => navigate(-1)}>

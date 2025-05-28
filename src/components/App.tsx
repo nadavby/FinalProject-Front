@@ -29,26 +29,26 @@ const App: React.FC = () => {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      <NotificationsProvider>
-        <NotificationProvider>
-          <Navigation />
+    <NotificationsProvider>
+      <NotificationProvider>
+        <Navigation />
           <div style={{ flex: 1, overflowY: 'auto' }}>
-            <Routes>
-              <Route path="/" element={isAuthenticated ? <LostItems /> : <Login />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<RegistrationForm />} />
-              <Route path="/lost-items" element={<LostItems />} />
-              <Route path="/upload-item" element={<ItemUpload />} />
-              <Route path="/item/:itemId" element={<ItemDetail />} />
-              <Route
-                path="/item/:itemId/match/:matchId"
-                element={<MatchConfirmation />}
-              />
-              <Route path="/profile" element={<UserProfile />} />
-            </Routes>
+        <Routes>
+          <Route path="/" element={isAuthenticated ? <LostItems /> : <Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<RegistrationForm />} />
+          <Route path="/lost-items" element={<LostItems />} />
+          <Route path="/upload-item" element={<ItemUpload />} />
+          <Route path="/item/:itemId" element={<ItemDetail />} />
+          <Route
+            path="/item/:itemId/match/:matchId"
+            element={<MatchConfirmation />}
+          />
+          <Route path="/profile" element={<UserProfile />} />
+        </Routes>
           </div>
-        </NotificationProvider>
-      </NotificationsProvider>
+      </NotificationProvider>
+    </NotificationsProvider>
     </div>
   );
 };
