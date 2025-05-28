@@ -18,6 +18,7 @@ import {
 import { itemCategories, ItemCategoryGroup } from "../../data/itemCategories";
 import { useLoadScript } from "@react-google-maps/api";
 import MultiMatchesModal, { MatchResult } from "../MultiMatchesModal";
+import { useLostItems } from '../../hooks/useItems';
 
 interface Location {
   lat: number;
@@ -83,6 +84,7 @@ const ItemUpload: FC = () => {
   const [showMatchesModal, setShowMatchesModal] = useState(false);
   const [otherCategory, setOtherCategory] = useState<string>("");
   const [mapInitialized, setMapInitialized] = useState(false);
+  const { fetchItems, setItems } = useLostItems();
 
   useEffect(() => {
     if (isLoaded && !loadError && mapContainerRef.current && !mapInitialized) {
@@ -274,12 +276,9 @@ const ItemUpload: FC = () => {
           console.error("Background item upload error:", err);
         });
 
-      // Navigate immediately after initiating the upload
-      if (formData.kind === 'lost') {
-        navigate('/lost-items', { state: { refresh: true } });
-      } else {
-        navigate('/profile');
-      }
+      // Update the items list with the new item
+      setItems((prevItems) => [savedItem, ...prevItems]);
+      navigate('/');
       
     } catch (err: any) {
       console.error("Error uploading item:", err);

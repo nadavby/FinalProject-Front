@@ -80,7 +80,7 @@ export const useUserItems = (userId: string) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
  
-  useEffect(() => {
+  const fetchItems = () => {
     if (!userId) return;
     
     console.log("Fetching user items... userId:", userId);
@@ -99,9 +99,16 @@ export const useUserItems = (userId: string) => {
     });
    
     return abort;
+  };
+
+  useEffect(() => {
+    const abort = fetchItems();
+    return () => {
+      if (abort) abort();
+    };
   }, [userId]);
 
-  return { items, error, isLoading, setItems, setError, setIsLoading };
+  return { items, error, isLoading, setItems, setError, setIsLoading, fetchItems };
 };
 
 export const useItemMatches = (itemId: string) => {
