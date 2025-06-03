@@ -11,9 +11,11 @@ import {
   faSearch,
   faMapMarkerAlt,
   faCalendarAlt,
-  faTag
+  faTag,
+  faMapMarkedAlt
 } from "@fortawesome/free-solid-svg-icons";
 import itemService from "../../services/item-service";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 type SortOption = 'newest' | 'oldest' | 'category';
 
@@ -178,6 +180,44 @@ const LostItems: FC = () => {
     }
   };
 
+  const miniMapCenter = { lat: 32.0853, lng: 34.7818 };
+  const miniMapMarkers = [
+    { id: '1', lat: 32.0853, lng: 34.7818, name: 'ארנק שחור' },
+    { id: '2', lat: 32.0800, lng: 34.7800, name: 'מפתחות עם מחזיק אדום' },
+    { id: '3', lat: 32.0900, lng: 34.7850, name: 'תיק גב כחול' },
+  ];
+
+  function MiniMapPreview() {
+    const { isLoaded } = useJsApiLoader({
+      googleMapsApiKey: "AIzaSyAlx_vvH0P5fepk8bHpzO54syb5heCvJXI"
+    });
+    if (!isLoaded) return <div style={{textAlign:'center',paddingTop:40}}>Loading...</div>;
+    return (
+      <GoogleMap
+        mapContainerStyle={{ width: '100%', height: '100%' }}
+        center={miniMapCenter}
+        zoom={13}
+        options={{
+          disableDefaultUI: true,
+          gestureHandling: 'none',
+          draggable: false,
+          zoomControl: false,
+          clickableIcons: false,
+          keyboardShortcuts: false,
+          scrollwheel: false,
+          styles: [
+            { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+            { featureType: 'transit', stylers: [{ visibility: 'off' }] }
+          ]
+        }}
+      >
+        {miniMapMarkers.map(marker => (
+          <Marker key={marker.id} position={{ lat: marker.lat, lng: marker.lng }} title={marker.name} />
+        ))}
+      </GoogleMap>
+    );
+  }
+
   return (
     <div className="container mt-3" style={{
       backgroundColor: '#fffbea',
@@ -185,6 +225,20 @@ const LostItems: FC = () => {
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
       animation: 'fadeIn 0.5s ease-in-out'
     }}>
+      {/* preview map */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div style={{ width: 220, height: 140, borderRadius: 12, overflow: 'hidden', boxShadow: '0 2px 8px #0001', border: '1px solid #eee' }}>
+          <MiniMapPreview />
+        </div>
+        <button
+          className="btn btn-warning"
+          style={{ fontWeight: 'bold', fontSize: 18, display: 'flex', alignItems: 'center', gap: 8 }}
+          onClick={() => navigate('/map')}
+        >
+          <FontAwesomeIcon icon={faMapMarkedAlt} />
+          Go to Lost Items Map
+        </button>
+      </div>
       <div className="row mb-4">
         <div className="col-md-6">
           <div className="input-group">
