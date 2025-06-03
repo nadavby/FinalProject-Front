@@ -267,16 +267,10 @@ const ItemUpload: FC = () => {
         submitData.append('image', uploadedImage);
       }
       
-      // Fire and forget - don't await the response
-      itemService.addItem(submitData)
-        .then(response => {
-          console.log("Item upload completed in background:", response);
-        })
-        .catch(err => {
-          console.error("Background item upload error:", err);
-        });
-
-      // Update the items list with the new item
+      // שלח את הפריט לשרת וחכה לתשובה
+      const response = await itemService.addItem(submitData);
+      // בהנחה שהתשובה מכילה את הפריט החדש תחת data
+      const savedItem = response.data;
       setItems((prevItems) => [savedItem, ...prevItems]);
       navigate('/');
       

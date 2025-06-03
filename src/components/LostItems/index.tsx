@@ -179,7 +179,12 @@ const LostItems: FC = () => {
   };
 
   return (
-    <div className="container mt-3">
+    <div className="container mt-3" style={{
+      backgroundColor: '#fffbea',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      animation: 'fadeIn 0.5s ease-in-out'
+    }}>
       <div className="row mb-4">
         <div className="col-md-6">
           <div className="input-group">
@@ -189,6 +194,12 @@ const LostItems: FC = () => {
               placeholder="Search items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                borderRadius: '25px',
+                transition: 'box-shadow 0.3s ease',
+              }}
+              onFocus={(e) => e.currentTarget.style.boxShadow = '0 0 10px rgba(255, 193, 7, 0.5)'}
+              onBlur={(e) => e.currentTarget.style.boxShadow = 'none'}
             />
             <button className="btn btn-outline-secondary" type="button">
               <FontAwesomeIcon icon={faSearch} />
@@ -200,6 +211,11 @@ const LostItems: FC = () => {
             <button 
               className="btn btn-outline-secondary dropdown-toggle" 
               onClick={() => setDropdownOpen(!dropdownOpen)}
+              style={{
+                transition: 'transform 0.3s ease',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
               Sort by: {getSortOptionText()}
             </button>

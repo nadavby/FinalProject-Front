@@ -241,7 +241,11 @@ const UserProfile: FC = () => {
       <div className="row">
         {filtered.map(item => (
           <div className="col-md-6 col-lg-4 mb-4" key={item._id}>
-            <div className="card h-100">
+            <div className="card h-100" style={{
+              backgroundColor: '#fffbea',
+              borderRadius: '8px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+            }}>
               {item.imgURL && (
                 <img 
                   src={item.imgURL} 
@@ -269,16 +273,31 @@ const UserProfile: FC = () => {
     <div className="container mt-4" style={{ 
       height: 'calc(100vh - 2rem)',
       overflowY: 'auto',
-      paddingBottom: '4rem'
+      paddingBottom: '4rem',
+      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      borderRadius: '8px',
+      animation: 'fadeIn 0.5s ease-in-out'
     }}>
+
       <button
         className="btn btn-outline-primary mb-3"
-        onClick={() => navigate(-1)}>
+        onClick={() => navigate(-1)}
+        style={{
+          transition: 'transform 0.3s ease',
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+      >
         <FontAwesomeIcon icon={faArrowLeft} className="me-2" />
         Back
       </button>
       
-      <div className="card p-4">
+      <div className="card p-4" style={{
+        backgroundColor: '#fffbea',
+        borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+      }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row align-items-center text-center text-md-start">
             <div className="col-md-3 text-center position-relative">

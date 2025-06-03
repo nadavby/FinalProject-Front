@@ -12,6 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../hooks/useAuth';
 import itemService, { Item, MatchResult } from '../../services/item-service';
+import { apiClient } from '../../services/api-client';
 import './MatchConfirmation.css';
 
 interface MatchConfirmationProps {
@@ -81,25 +82,42 @@ const MatchConfirmation: React.FC<MatchConfirmationProps> = (props) => {
     if (!item || !matchedItem || !currentUser) return;
     setIsSubmitting(true);
     try {
-      const payload = {
-        isResolved: true,
-        resolvedWithItemId: matchedItem._id,
-        contactMethod,
-        contactDetails,
-        message
-      };
-      await itemService.resolveItem(item._id!, payload, currentUser._id);
-      await itemService.resolveItem(matchedItem._id!, {
-        isResolved: true,
-        resolvedWithItemId: item._id,
-        contactMethod,
-        contactDetails,
-        message
-      }, currentUser._id);
+      const isCurrentUserOwner = item.owner === currentUser._id;
+      const otherUserId = isCurrentUserOwner ? matchedItem.owner : item.owner;
+      await apiClient.post('/items/notifications', {
+        userId: otherUserId,
+        type: 'MATCH_CONTACT',
+        title: 'Contact details for match',
+        message: `A user confirmed a match and wants to share contact details: ${contactDetails} (${contactMethod})`,
+        data: {
+          itemId: item._id,
+          matchId: matchedItem._id,
+          itemName: item.name,
+          matchName: matchedItem.name,
+          itemImage: item.imgURL,
+          matchImage: matchedItem.imgURL,
+          itemDescription: item.description,
+          matchDescription: matchedItem.description,
+          itemCategory: item.category,
+          matchCategory: matchedItem.category,
+          itemDate: item.date,
+          matchDate: matchedItem.date,
+          itemLocation: typeof item.location === 'string' ? item.location : JSON.stringify(item.location),
+          matchLocation: typeof matchedItem.location === 'string' ? matchedItem.location : JSON.stringify(matchedItem.location),
+          ownerName: item.ownerName,
+          ownerEmail: item.ownerEmail,
+          contactMethod,
+          contactDetails,
+          message,
+          fromUserId: currentUser._id,
+          fromUserName: currentUser.email || '',
+          score: matchInfo?.similarity ? Math.round(matchInfo.similarity * 100) : 0,
+        },
+      });
       setConfirmationSuccess(true);
     } catch (error) {
-      console.error('Error confirming match:', error);
-      setError('Failed to confirm match');
+      console.error('Error sending contact notification:', error);
+      setError('שליחת ההתראה נכשלה');
     } finally {
       setIsSubmitting(false);
     }

@@ -1,4 +1,3 @@
-
 import { FC, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
@@ -27,7 +26,7 @@ const Navigation: FC = () => {
   };
   
   return (
-    <nav className="navbar navbar-dark bg-primary">
+    <nav className="navbar navbar-dark" style={{ backgroundColor: '#ffc107' }}>
       <div className="container">
         <div className="order-0">
           <Link className="navbar-brand d-flex align-items-center" to="/lost-items" onClick={closeMenu}>

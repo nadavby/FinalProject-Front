@@ -43,7 +43,10 @@ const NotificationItem: FC<NotificationItemProps> = ({ notification, onClose }) 
       }
     }
     
-    if (notification.type === 'match' && notification.data) {
+    console.log('Notification type:', notification.type);
+    console.log('Notification object:', notification);
+
+    if (notification.data) {
       setShowMatchModal(true);
     }
   };
@@ -160,15 +163,27 @@ const NotificationItem: FC<NotificationItemProps> = ({ notification, onClose }) 
         <MatchDetailModal
           isOpen={showMatchModal}
           onClose={() => setShowMatchModal(false)}
-          itemId={notification.data.itemId}
-          matchId={notification.data.matchId}
-          itemName={notification.data.itemName}
-          matchName={notification.data.matchName}
-          itemImage={notification.data.itemImage}
-          matchImage={notification.data.matchImage}
-          score={notification.data.score}
-          ownerName={notification.data.ownerName}
-          ownerEmail={notification.data.ownerEmail}
+          title={(notification.type && notification.type.toString().toLowerCase().replace(/\s/g, '') === 'match_contact') ? 'Contact Information' : 'Match Confirmation'}
+          itemId={(notification.data as any).itemId}
+          matchId={(notification.data as any).matchId}
+          itemName={(notification.data as any).itemName}
+          matchName={(notification.data as any).matchName}
+          itemImage={(notification.data as any).itemImage}
+          matchImage={(notification.data as any).matchImage}
+          score={(notification.data as any).score}
+          ownerName={(notification.data as any).ownerName}
+          ownerEmail={(notification.data as any).ownerEmail}
+          contactDetails={(notification.data as any).contactDetails}
+          contactMethod={(notification.data as any).contactMethod}
+          itemDescription={(notification.data as any).itemDescription}
+          matchDescription={(notification.data as any).matchDescription}
+          itemCategory={(notification.data as any).itemCategory}
+          matchCategory={(notification.data as any).matchCategory}
+          itemDate={(notification.data as any).itemDate}
+          matchDate={(notification.data as any).matchDate}
+          itemLocation={(notification.data as any).itemLocation}
+          matchLocation={(notification.data as any).matchLocation}
+          message={(notification.data as any).message}
           onViewDetails={handleViewDetails}
         />
       )}
