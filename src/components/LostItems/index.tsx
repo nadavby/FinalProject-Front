@@ -255,9 +255,6 @@ const LostItems: FC = () => {
               onFocus={(e) => e.currentTarget.style.boxShadow = '0 0 10px rgba(255, 193, 7, 0.5)'}
               onBlur={(e) => e.currentTarget.style.boxShadow = 'none'}
             />
-            <button className="btn btn-outline-secondary" type="button">
-              <FontAwesomeIcon icon={faSearch} />
-            </button>
           </div>
         </div>
         <div className="col-md-6">
