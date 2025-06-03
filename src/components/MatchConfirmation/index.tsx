@@ -225,9 +225,9 @@ const MatchConfirmation: React.FC<MatchConfirmationProps> = (props) => {
           <div className="d-flex justify-content-center gap-3">
             <button
               className="btn btn-outline-primary"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
             >
-              Go to Dashboard
+              Back to Homepage
             </button>
           </div>
         </div>

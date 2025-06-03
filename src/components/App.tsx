@@ -14,6 +14,7 @@ import ItemUpload from "./ItemUpload";
 import ItemDetail from "./ItemDetail";
 import MatchConfirmation from "./MatchConfirmation";
 import UserProfile from "./UserProfile";
+import LostItemsMap from "../LostItemsMap";
 import "../styles/global.css";
 
 const App: React.FC = () => {
@@ -48,6 +49,7 @@ const App: React.FC = () => {
             element={<MatchConfirmation />}
           />
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="/map" element={<LostItemsMap />} />
         </Routes>
           </div>
       </NotificationProvider>

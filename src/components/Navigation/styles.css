@@ -1,6 +1,8 @@
 /* Basic navbar styling */
 .navbar {
   padding: 0.75rem 1rem;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 /* Container layout for the three-part navigation */
@@ -9,6 +11,8 @@
   align-items: center;
   justify-content: space-between;
   position: relative;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 /* Ensure logo, notification, and hamburger are all properly sized */
@@ -51,21 +55,20 @@
 
 /* Collapsible menu container */
 .navbar-collapse-container {
-  position: fixed;
-  top: 56px; /* Height of navbar */
-  left: 0;
+  display: none;
+  position: absolute;
+  top: 100%;
   right: 0;
-  background-color: #0d6efd; /* Match navbar bg-primary color */
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  z-index: 1000;
+  min-width: 220px;
+  background-color: #ffc107 !important;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  padding: 0.5rem 1rem;
+  z-index: 2000;
 }
 
 .navbar-collapse-container.show {
-  max-height: calc(100vh - 56px);
-  overflow-y: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: block;
 }
 
 /* Menu items styling */
@@ -169,4 +172,26 @@
 .btn-profile:focus {
   box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
   outline: none;
+}
+
+.navbar-nav .nav-link.active {
+  background: rgba(255,255,255,0.25);
+  border-radius: 8px;
+}
+
+.navbar,
+.navbar *,
+.navbar-collapse-container,
+.navbar-collapse-container * {
+  border-bottom: none !important;
+  border-top: none !important;
+}
+
+.navbar::after,
+.navbar::before,
+.navbar-collapse-container::after,
+.navbar-collapse-container::before {
+  border-bottom: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
 } 

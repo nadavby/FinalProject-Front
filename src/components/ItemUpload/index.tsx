@@ -56,7 +56,7 @@ const ItemUpload: FC = () => {
   const googleMapRef = useRef<google.maps.Map | null>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
   
-  const [apiKey] = useState(import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyCqhXlqSGDjbIsC8sFcADsTV2z3nbuwLCs");
+  const [apiKey] = useState("AIzaSyAlx_vvH0P5fepk8bHpzO54syb5heCvJXI");
   
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: apiKey,
@@ -296,7 +296,7 @@ const ItemUpload: FC = () => {
   };
 
   if (loadError) {
-    return <div>Error loading maps: {loadError.message}</div>;
+    return <div style={{ color: 'red', textAlign: 'center', margin: 20 }}>Failed to load Google Maps. Please check your API key and billing settings.</div>;
   }
 
   if (!isLoaded) {
