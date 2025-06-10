@@ -15,6 +15,7 @@ export interface IUser {
   imgURL?: string;
   accessToken?: string;
   refreshToken?: string;
+  phoneNumber?: string;
 }
 
 interface DecodedToken {

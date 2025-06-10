@@ -78,13 +78,13 @@ const ItemUpload: FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [matchResults, setMatchResults] = useState<MatchResult[] | null>(null);
-  const [uploadedItemId, setUploadedItemId] = useState<string | null>(null);
-  const [uploadedItemName, setUploadedItemName] = useState<string | null>(null);
+  const [matchResults] = useState<MatchResult[] | null>(null);
+  const [uploadedItemId] = useState<string | null>(null);
+  const [uploadedItemName] = useState<string | null>(null);
   const [showMatchesModal, setShowMatchesModal] = useState(false);
   const [otherCategory, setOtherCategory] = useState<string>("");
   const [mapInitialized, setMapInitialized] = useState(false);
-  const { fetchItems, setItems } = useLostItems();
+  const { setItems } = useLostItems();
 
   useEffect(() => {
     if (isLoaded && !loadError && mapContainerRef.current && !mapInitialized) {
@@ -261,10 +261,10 @@ const ItemUpload: FC = () => {
       submitData.append('location', formData.location ? JSON.stringify(formData.location) : '');
       submitData.append('date', formData.date);
       submitData.append('itemType', formData.kind); 
-      submitData.append('owner', currentUser._id);
+      submitData.append('userId', currentUser._id);
       
       if (uploadedImage) {
-        submitData.append('image', uploadedImage);
+        submitData.append('file', uploadedImage);
       }
       
       // שלח את הפריט לשרת וחכה לתשובה

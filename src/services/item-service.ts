@@ -55,21 +55,18 @@ export const getItemImageUrl = (url: string | undefined): string => {
 
 const getAllLostItems = () => {
   const abortController = new AbortController();
-  const request = apiClient.get<Item[]>("/items/lost", {
+  const request = apiClient.get<Item[]>("/items?itemType=lost", {
     signal: abortController.signal,
   });
   
   const enhancedRequest = request.then(response => {
-    
     if (response.data && response.data.length > 0) {
       const firstItem = response.data[0];
-      
       if (!Object.prototype.hasOwnProperty.call(firstItem, 'name') && Object.prototype.hasOwnProperty.call(firstItem, 'data')) {
         console.log("Transforming nested item structure...");
         response.data = response.data.map((item: any) => item.data || item);
       }
     }
-    
     return response;
   });
   
@@ -133,7 +130,7 @@ const getItemById = (id: string) => {
 
 const getItemsByUser = (userId: string) => {
   const abortController = new AbortController();
-  const request = apiClient.get<Item[]>(`/items/user/${userId}`, {
+  const request = apiClient.get<Item[]>(`/items?userId=${userId}`, {
     signal: abortController.signal,
   });
   

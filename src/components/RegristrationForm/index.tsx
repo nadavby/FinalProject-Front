@@ -14,6 +14,7 @@ const schema = z.object({
   email: z.string().email(),
   userName: z.string().min(3, "Name must be at least 3 characters"),
   password: z.string().min(8, "Password must be at least 8 characters"),
+  phoneNumber: z.string().min(7, "Phone number must be at least 7 digits"),
   img: z.optional(z.instanceof(FileList)),
 });
 
@@ -47,6 +48,7 @@ export const RegistrationForm: FC = () => {
         email: data.email,
         userName: data.userName,
         password: data.password,
+        phoneNumber: data.phoneNumber,
         imgURL: res.data.url,
       };
 
@@ -155,6 +157,23 @@ export const RegistrationForm: FC = () => {
                   />
                   {errors.userName && (
                     <div className="invalid-feedback">{errors.userName.message}</div>
+                  )}
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="phoneNumber" className="form-label d-flex align-items-center">
+                    <FontAwesomeIcon icon={faUser} className="me-2" />
+                    Phone Number
+                  </label>
+                  <input
+                    {...register("phoneNumber")}
+                    type="tel"
+                    className={`form-control ${errors.phoneNumber ? "is-invalid" : ""}`}
+                    id="phoneNumber"
+                    placeholder="Enter your phone number"
+                  />
+                  {errors.phoneNumber && (
+                    <div className="invalid-feedback">{errors.phoneNumber.message}</div>
                   )}
                 </div>
 
